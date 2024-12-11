@@ -1,19 +1,153 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+    content: ['./src/pages/**/*.{js,ts,jsx,tsx,mdx}', './src/components/**/*.{js,ts,jsx,tsx,mdx}', './src/app/**/*.{js,ts,jsx,tsx,mdx}'],
+    theme: {
+        extend: {
+            colors: {
+                background: 'var(--background)',
+                foreground: 'var(--foreground)',
+            },
+            animation: {
+                wiggle: 'wiggle 0.2s infinite',
+            },
+            keyframes: {
+                wiggle: {
+                    '0%': { transform: 'rotate(3deg)' },
+                    '50%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(3deg)' },
+                },
+            },
+        },
     },
-  },
-  plugins: [],
+    plugins: [],
+    purge: {
+        content: ['./src/**/*.{js,jsx,ts,tsx}'],
+        options: {
+            safelist: [
+                // Default grid-cols
+                'grid-cols-1',
+                'grid-cols-2',
+                'grid-cols-3',
+                'grid-cols-4',
+                'grid-cols-5',
+                'grid-cols-6',
+                'grid-cols-7',
+                'grid-cols-8',
+                'grid-cols-9',
+                'grid-cols-10',
+                'grid-cols-11',
+                'grid-cols-12',
+
+                // Gap utilities
+                'gap-4',
+                'gap-8',
+                'gap-16',
+                'gap-20',
+                'gap-24',
+                'gap-40',
+
+                // xl breakpoint classes
+                'xl:grid-cols-1',
+                'xl:grid-cols-2',
+                'xl:grid-cols-3',
+                'xl:grid-cols-4',
+                'xl:grid-cols-5',
+                'xl:grid-cols-6',
+                'xl:grid-cols-7',
+                'xl:grid-cols-8',
+                'xl:grid-cols-9',
+                'xl:grid-cols-10',
+                'xl:grid-cols-11',
+                'xl:grid-cols-12',
+                'xl:gap-4',
+                'xl:gap-8',
+                'xl:gap-16',
+                'xl:gap-20',
+                'xl:gap-24',
+                'xl:gap-40',
+
+                // lg breakpoint classes
+                'lg:grid-cols-1',
+                'lg:grid-cols-2',
+                'lg:grid-cols-3',
+                'lg:grid-cols-4',
+                'lg:grid-cols-5',
+                'lg:grid-cols-6',
+                'lg:grid-cols-7',
+                'lg:grid-cols-8',
+                'lg:grid-cols-9',
+                'lg:grid-cols-10',
+                'lg:grid-cols-11',
+                'lg:grid-cols-12',
+                'lg:gap-4',
+                'lg:gap-8',
+                'lg:gap-16',
+                'lg:gap-20',
+                'lg:gap-24',
+                'lg:gap-40',
+
+                // md breakpoint classes
+                'md:grid-cols-1',
+                'md:grid-cols-2',
+                'md:grid-cols-3',
+                'md:grid-cols-4',
+                'md:grid-cols-5',
+                'md:grid-cols-6',
+                'md:grid-cols-7',
+                'md:grid-cols-8',
+                'md:grid-cols-9',
+                'md:grid-cols-10',
+                'md:grid-cols-11',
+                'md:grid-cols-12',
+                'md:gap-4',
+                'md:gap-8',
+                'md:gap-16',
+                'md:gap-20',
+                'md:gap-24',
+                'md:gap-40',
+
+                // sm breakpoint classes
+                'sm:grid-cols-1',
+                'sm:grid-cols-2',
+                'sm:grid-cols-3',
+                'sm:grid-cols-4',
+                'sm:grid-cols-5',
+                'sm:grid-cols-6',
+                'sm:grid-cols-7',
+                'sm:grid-cols-8',
+                'sm:grid-cols-9',
+                'sm:grid-cols-10',
+                'sm:grid-cols-11',
+                'sm:grid-cols-12',
+                'sm:gap-4',
+                'sm:gap-8',
+                'sm:gap-16',
+                'sm:gap-20',
+                'sm:gap-24',
+                'sm:gap-40',
+
+                // xs breakpoint classes
+                'xs:grid-cols-1',
+                'xs:grid-cols-2',
+                'xs:grid-cols-3',
+                'xs:grid-cols-4',
+                'xs:grid-cols-5',
+                'xs:grid-cols-6',
+                'xs:grid-cols-7',
+                'xs:grid-cols-8',
+                'xs:grid-cols-9',
+                'xs:grid-cols-10',
+                'xs:grid-cols-11',
+                'xs:grid-cols-12',
+                'xs:gap-4',
+                'xs:gap-8',
+                'xs:gap-16',
+                'xs:gap-20',
+                'xs:gap-24',
+                'xs:gap-40',
+            ],
+        },
+    },
 };
 export default config;
