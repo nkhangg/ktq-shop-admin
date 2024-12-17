@@ -11,9 +11,11 @@ import { formatTime } from '@/instances/moment';
 import Routes from '@/instances/routes';
 import { RootState } from '@/store';
 import { IRole } from '@/types';
-import { Box, Modal } from '@mantine/core';
+import { ActionIcon, Box, Modal, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconLink } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 export interface IALAdminUserRolesRootPageProps {}
@@ -197,6 +199,13 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
                     body(row) {
                         return (
                             <ActionColumn
+                                itemActions={[
+                                    <Tooltip label={`Resources of ${row.role_name}`}>
+                                        <ActionIcon component={Link} href={Routes.DETAIL_ROLE(row)} size="sm">
+                                            <IconLink style={{ width: '70%', height: '70%' }} stroke={1.5} />
+                                        </ActionIcon>
+                                    </Tooltip>,
+                                ]}
                                 messages={(_, data) => {
                                     return {
                                         delete: `Are you sure delete customer ${data.role_name}`,

@@ -6,18 +6,13 @@ import CustomerControlAccount from '@/components/customers/customer-contol-accou
 import CustomerLoginHistories from '@/components/customers/customer-login-histories';
 import CustomerView from '@/components/customers/customer-view';
 import { useTitle } from '@/hooks';
+import { ICustomerPageMenuData } from '@/types';
 import { Button, Divider, Grid, Stack, Text } from '@mantine/core';
 import { ComponentType, useMemo, useState } from 'react';
 
 export interface IALDetailCustomerRootPageProps {
     params: { params: string[] };
 }
-export type CustomerPageMenuData = {
-    key: string;
-    title: string;
-    titleContent: string;
-    component: ComponentType<any>;
-};
 
 export default function ALDetailCustomerRootPage({
     params: {
@@ -26,9 +21,9 @@ export default function ALDetailCustomerRootPage({
 }: IALDetailCustomerRootPageProps) {
     useTitle(`${username}`);
 
-    const [tab, setTab] = useState<CustomerPageMenuData['key']>('customer-view');
+    const [tab, setTab] = useState<ICustomerPageMenuData['key']>('customer-view');
 
-    const menus: CustomerPageMenuData[] = useMemo(() => {
+    const menus: ICustomerPageMenuData[] = useMemo(() => {
         return [
             {
                 key: 'customer-view',

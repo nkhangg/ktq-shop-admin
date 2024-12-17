@@ -1,4 +1,4 @@
-import { IAdminUser, ICustomer } from '@/types';
+import { IAdminUser, ICustomer, IRole } from '@/types';
 
 export default class Routes {
     public static LOGIN = '/login';
@@ -21,5 +21,9 @@ export default class Routes {
 
     public static DETAIL_ADMIN_USER = (adminUser: IAdminUser) => {
         return `${this.ADMIN_USERS}/${adminUser.id}/${adminUser.username}`;
+    };
+
+    public static DETAIL_ROLE = (role: IRole) => {
+        return `${this.USER_ROLE}/${role.id}/${role.role_name.replaceAll(' ', '-').toLocaleLowerCase()}`;
     };
 }

@@ -100,9 +100,9 @@ export default function CustomerControlAccount({ ...props }: ICustomerControlAcc
         },
     });
 
-    const hiddenMutation = useMutation({
+    const inActiveMutation = useMutation({
         mutationKey: ['customers/hidden[PUT]'],
-        mutationFn: (customerId: number) => customersApi.hidden(customerId),
+        mutationFn: (customerId: number) => customersApi.inActive(customerId),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
         },
@@ -113,9 +113,9 @@ export default function CustomerControlAccount({ ...props }: ICustomerControlAcc
         },
     });
 
-    const unhiddenMutation = useMutation({
+    const activeMutation = useMutation({
         mutationKey: ['customers/unhidden[PUT]'],
-        mutationFn: (customerId: number) => customersApi.unhidden(customerId),
+        mutationFn: (customerId: number) => customersApi.active(customerId),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
         },
@@ -167,8 +167,8 @@ export default function CustomerControlAccount({ ...props }: ICustomerControlAcc
 
         dispatch(
             addComfirm({
-                callback: () => (customer.is_active ? hiddenMutation.mutate(props.id) : unhiddenMutation.mutate(props.id)),
-                title: `Are you want to ${customer.is_active ? 'Un active' : 'Active'} this customer.`,
+                callback: () => (customer.is_active ? inActiveMutation.mutate(props.id) : activeMutation.mutate(props.id)),
+                title: `Are you want to ${customer.is_active ? 'Inactive' : 'Active'} this customer.`,
             }),
         );
     };

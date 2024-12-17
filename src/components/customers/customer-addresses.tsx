@@ -32,8 +32,6 @@ export default function CustomerAddresses(props: ICustomerAddressesProps) {
 
     const [addressOpened, addressModalAction] = useDisclosure(false);
 
-    // const refForm: CAddressActionRef = useRef({});
-
     const dispatch = useDispatch();
 
     const { data, isPending, refetch } = useQuery({

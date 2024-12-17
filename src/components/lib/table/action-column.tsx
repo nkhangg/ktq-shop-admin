@@ -1,13 +1,10 @@
 'use client';
 import { addComfirm } from '@/store/slices/comfirm-slice';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ActionIcon, Box, Button, Dialog, Text, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { ActionIcon, Box, Tooltip } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { Url } from 'next/dist/shared/lib/router/router';
 import Link from 'next/link';
-import * as React from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export interface IActionColumnProps<R> {
@@ -18,6 +15,9 @@ export interface IActionColumnProps<R> {
         url?: string | Url;
         callback?: () => void;
     };
+    itemActions?: JSX.Element[];
+    disabledDel?: boolean;
+    confirm?: boolean;
     labelDel?: (data: R) => string;
     labelEdit?: (data: R) => string;
     onSubmit?: (action: IActionColData<R>) => void;
@@ -35,7 +35,9 @@ export default function ActionColumn<R>({
     labelDel,
     onSubmit,
     onClose,
+    confirm = true,
     data,
+    itemActions,
     loading,
     editOption = {
         type: 'button',
@@ -44,8 +46,9 @@ export default function ActionColumn<R>({
         delete: 'Are you sure delete this item',
         edit: 'Are you want to update this item',
     },
+    disabledDel = false,
 }: IActionColumnProps<R>) {
-    const [action, setAction] = React.useState<IActionColData<R> | null>(null);
+    const [action, setAction] = useState<IActionColData<R> | null>(null);
 
     const dispatch = useDispatch();
 
@@ -63,19 +66,19 @@ export default function ActionColumn<R>({
         handleClose();
     };
 
-    return (
-        <>
-            <Box className="flex items-center justify-center gap-2">
-                <Tooltip opened={!!labelEdit} label={labelEdit ? labelEdit(data) : null}>
-                    <ActionIcon
-                        component={editOption.type === 'link' ? Link : undefined}
-                        href={editOption.type === 'link' && editOption.url ? editOption.url : ''}
-                        onClick={() => {
-                            if (editOption.type === 'link') return;
+    const items = useMemo(() => {
+        return [
+            <Tooltip opened={!!labelEdit} label={labelEdit ? labelEdit(data) : null}>
+                <ActionIcon
+                    component={editOption.type === 'link' ? Link : undefined}
+                    href={editOption.type === 'link' && editOption.url ? editOption.url : ''}
+                    onClick={() => {
+                        if (editOption.type === 'link') return;
 
-                            if (editOption?.callback) {
-                                editOption.callback();
-                            } else {
+                        if (editOption?.callback) {
+                            editOption.callback();
+                        } else {
+                            if (confirm) {
                                 dispatch(
                                     addComfirm({
                                         callback: () => handleSubmit({ key: 'edit', data }),
@@ -86,16 +89,22 @@ export default function ActionColumn<R>({
                                         acceptLabel: 'Submit',
                                     }),
                                 );
+                            } else {
+                                handleSubmit({ key: 'edit', data });
                             }
-                        }}
-                        size="sm"
-                    >
-                        <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
-                    </ActionIcon>
-                </Tooltip>
-                <Tooltip opened={!!labelDel} label={labelDel ? labelDel(data) : undefined}>
-                    <ActionIcon
-                        onClick={() => {
+                        }
+                    }}
+                    size="sm"
+                >
+                    <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
+                </ActionIcon>
+            </Tooltip>,
+            ...(itemActions || []),
+            <Tooltip opened={!!labelDel} label={labelDel ? labelDel(data) : undefined}>
+                <ActionIcon
+                    disabled={disabledDel}
+                    onClick={() => {
+                        if (confirm) {
                             dispatch(
                                 addComfirm({
                                     callback: () => handleSubmit({ key: 'delete', data }),
@@ -109,27 +118,26 @@ export default function ActionColumn<R>({
                                     },
                                 }),
                             );
-                        }}
-                        size="sm"
-                        color="red"
-                    >
-                        <IconTrash style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
-                    </ActionIcon>
-                </Tooltip>
+                        } else {
+                            handleSubmit({ key: 'delete', data });
+                        }
+                    }}
+                    size="sm"
+                    color="red"
+                >
+                    <IconTrash style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
+                </ActionIcon>
+            </Tooltip>,
+        ];
+    }, [itemActions]);
+
+    return (
+        <>
+            <Box className="flex items-center justify-center gap-2">
+                {items.map((item, index) => (
+                    <Fragment key={index}>{item}</Fragment>
+                ))}
             </Box>
-            {/* <Dialog opened={opened} withCloseButton onClose={handleClose} size="lg" radius="md">
-                <Text size="sm" mb="xs" fw={500}>
-                    {messages && action && (typeof messages === 'function' ? messages(action, data)[action.key] : messages[action.key])}
-                </Text>
-                <div className="flex items-center justify-end w-full gap-3">
-                    <Button size="xs" disabled={loading} onClick={handleSubmit}>
-                        Ok
-                    </Button>
-                    <Button size="xs" disabled={loading} color="red" onClick={handleClose}>
-                        Close
-                    </Button>
-                </div>
-            </Dialog> */}
         </>
     );
 }

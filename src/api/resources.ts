@@ -1,14 +1,18 @@
-import axios from '@/instances/axios';
-import { joinUrl } from '@/utils/app';
-import { IApiResponse } from './api';
+import { ICountry, IProvince, IResource, IRole } from '@/types';
+import { injectable } from 'inversify';
+import { Api, IApiResponse, IApiResponsePagination } from './api';
 
-const api_url = joinUrl('admin/resources');
+@injectable()
+export default class ApiResources extends Api {
+    constructor() {
+        super('admin/resources');
+    }
 
-export const getResources = async (): Promise<IApiResponse<[]>> => {
-    const response = await axios({
-        method: 'GET',
-        url: api_url(''),
-    });
+    public async resourceByRole(role_id: IRole['id'], params: Record<string, string | number>): Promise<IApiResponsePagination<IResource[]>> {
+        return await this.get<IApiResponsePagination<IResource[]>>(`roles/${role_id}`, { params });
+    }
 
-    return response.data;
-};
+    public async resourceIgnoreByRole(role_id: IRole['id'], params: Record<string, string | number>): Promise<IApiResponsePagination<IResource[]>> {
+        return await this.get<IApiResponsePagination<IResource[]>>(`ignore-roles/${role_id}`, { params });
+    }
+}

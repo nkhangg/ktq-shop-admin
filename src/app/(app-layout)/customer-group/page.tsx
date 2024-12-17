@@ -8,6 +8,7 @@ import Table from '@/components/lib/table/table';
 import { IActionData, IColumn } from '@/components/lib/table/type';
 import { container } from '@/di/container';
 import { useTitle } from '@/hooks';
+import { useCustomerGroupsSelectData } from '@/hooks/customer-groups';
 import moment from '@/instances/moment';
 import { addComfirm } from '@/store/slices/comfirm-slice';
 import { ICustomerGroup } from '@/types';
@@ -42,6 +43,8 @@ export default function ALCustomerGroupRootPage(props: IALCustomerGroupRootPageP
         queryKey: ['customers-groups[GET]', { ...params }],
     });
 
+    const { refresh } = useCustomerGroupsSelectData();
+
     const createMutation = useMutation({
         mutationFn: (data: Pick<ICustomerGroup, 'name'>) => customerGroupApi.create(data),
         mutationKey: ['customers-groups[POST]'],
@@ -67,6 +70,8 @@ export default function ALCustomerGroupRootPage(props: IALCustomerGroupRootPageP
             refetch();
             setChooses([]);
             close();
+
+            requestIdleCallback(() => refresh());
         },
     });
 
@@ -81,6 +86,7 @@ export default function ALCustomerGroupRootPage(props: IALCustomerGroupRootPageP
             refetch();
             setChooses([]);
             close();
+            requestIdleCallback(() => refresh());
         },
     });
 

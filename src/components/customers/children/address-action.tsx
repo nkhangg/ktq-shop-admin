@@ -20,6 +20,11 @@ export type CAddressActionRef = React.MutableRefObject<{
     reset?: () => void;
 }>;
 
+const cacheTime = {
+    staleTime: 100000,
+    gcTime: 300000,
+};
+
 const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ customerId, addressData, refForm, onSuccess }, ref) => {
     const addressSchema = yup.object().shape({
         country_id: yup.number().required('Country is required'),
@@ -72,21 +77,25 @@ const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ cust
     const countriesQuery = useQuery({
         queryFn: () => locationApi.countries(),
         queryKey: ['location/countries[GET]'],
+        ...cacheTime,
     });
 
     const provincesQuery = useQuery({
         queryFn: () => locationApi.provinces(),
         queryKey: ['location/provinces[GET]'],
+        gcTime: cacheTime.gcTime,
     });
 
     const districtsMutation = useMutation({
         mutationFn: (province_name: string) => locationApi.districts({ province_name }),
         mutationKey: ['location/districts[GET]'],
+        gcTime: cacheTime.gcTime,
     });
 
     const wardsMutation = useMutation({
         mutationFn: (params: { province_name: string; district_name: string }) => locationApi.wards(params),
         mutationKey: ['location/wards[GET]'],
+        gcTime: cacheTime.gcTime,
     });
 
     const createAddressMutation = useMutation({
@@ -234,8 +243,9 @@ const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ cust
             })}
         >
             <Box className="grid grid-cols-2 gap-3 w-full mb-5">
-                <Select styles={{ root: { width: ' 100%' } }} label="Country" placeholder="Việt Nam" data={countriesSelect} {...form.getInputProps('country_id')} />
+                <Select withAsterisk styles={{ root: { width: ' 100%' } }} label="Country" placeholder="Việt Nam" data={countriesSelect} {...form.getInputProps('country_id')} />
                 <Autocomplete
+                    withAsterisk
                     styles={{ root: { width: ' 100%' } }}
                     label="Province"
                     placeholder="Thành phố Hà Nội"
@@ -244,6 +254,7 @@ const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ cust
                     rightSection={rightSection('province')}
                 />
                 <Autocomplete
+                    withAsterisk
                     styles={{ root: { width: ' 100%' } }}
                     label="District"
                     placeholder="Quận Ba Đình"
@@ -252,6 +263,7 @@ const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ cust
                     rightSection={rightSection('district')}
                 />
                 <Autocomplete
+                    withAsterisk
                     styles={{ root: { width: ' 100%' } }}
                     label="Ward"
                     placeholder="Phường Phúc Xá"
@@ -260,6 +272,7 @@ const CAddressAction = forwardRef<HTMLFormElement, ICAddressActionProps>(({ cust
                     rightSection={rightSection('ward')}
                 />
                 <TextInput
+                    withAsterisk
                     styles={{ root: { width: ' 100%' } }}
                     classNames={{ root: 'col-span-2' }}
                     label="Address"

@@ -31,7 +31,7 @@ export interface TableProps<R extends Record<string, string | number>> extends M
     refTableFn?: TRefTableFn<R>;
     renderPramsOnUrl?: boolean;
     filterProps?: IFilterItemProps<R>;
-    hightlightResult?: {
+    highlightResult?: {
         show?: boolean;
         style?: React.CSSProperties;
     };
@@ -57,19 +57,19 @@ export interface TableProps<R extends Record<string, string | number>> extends M
 
 const TableIcon = ({
     children,
-    lable,
+    label,
     icon,
     disabled = false,
     onClick,
 }: {
     children?: ReactNode;
     icon?: IconProp;
-    lable: string;
+    label: string;
     disabled?: boolean;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
 }) => {
     return (
-        <Tooltip className="bg-gray-600" style={{ textTransform: 'capitalize' }} label={lable}>
+        <Tooltip className="bg-gray-600" style={{ textTransform: 'capitalize' }} label={label}>
             <Box onClick={!disabled ? onClick : undefined} className="font-bold p-1 rounded-full hover:bg-gray-100 w-6 h-6 flex items-center justify-center select-none">
                 {children ? (
                     <Box style={{ fontSize: '12px', color: 'gray' }}>{children}</Box>
@@ -104,7 +104,7 @@ const Table = <R extends Record<string, any>>({
     showChooses = true,
     chooseOptions,
     showActions = true,
-    hightlightResult = { show: true, style: defaultStyleHightlight },
+    highlightResult = { show: true, style: defaultStyleHightlight },
     actionsOptions,
     onSort,
     onAfterFetch,
@@ -304,7 +304,7 @@ const Table = <R extends Record<string, any>>({
                 return props?.iconNormal ? (
                     <Box onClick={handleShort}>{props.iconNormal}</Box>
                 ) : (
-                    <TableIcon disabled={disabled} onClick={handleShort} lable="desc" icon={faArrowsUpDown} />
+                    <TableIcon disabled={disabled} onClick={handleShort} label="desc" icon={faArrowsUpDown} />
                 );
             };
 
@@ -314,9 +314,9 @@ const Table = <R extends Record<string, any>>({
 
             switch (short.type) {
                 case 'asc':
-                    return props?.iconUp ? <Box onClick={handleShort}>{props.iconUp}</Box> : <TableIcon onClick={handleShort} lable={'clear'} icon={faArrowUpAZ} />;
+                    return props?.iconUp ? <Box onClick={handleShort}>{props.iconUp}</Box> : <TableIcon onClick={handleShort} label={'clear'} icon={faArrowUpAZ} />;
                 case 'desc':
-                    return props?.iconDown ? <Box onClick={handleShort}>{props.iconDown}</Box> : <TableIcon onClick={handleShort} lable={'asc'} icon={faArrowDownAZ} />;
+                    return props?.iconDown ? <Box onClick={handleShort}>{props.iconDown}</Box> : <TableIcon onClick={handleShort} label={'asc'} icon={faArrowDownAZ} />;
                 case 'clear':
                     return <DefaultIcon />;
 
@@ -438,7 +438,7 @@ const Table = <R extends Record<string, any>>({
 
     const renderRow = useCallback(
         (row: R, col: IColumn<R>) => {
-            if (!hightlightResult.show) {
+            if (!highlightResult.show) {
                 if (col.renderRow) return col.renderRow(row);
 
                 return row[col.key];
@@ -455,7 +455,7 @@ const Table = <R extends Record<string, any>>({
                             __html: DOMPurify.sanitize(
                                 String(row[col.key]).replace(
                                     String(item.type),
-                                    `<span style="${styleToString(hightlightResult.style || defaultStyleHightlight)}">${item.type}</span>`,
+                                    `<span style="${styleToString(highlightResult.style || defaultStyleHightlight)}">${item.type}</span>`,
                                 ),
                             ),
                         }}

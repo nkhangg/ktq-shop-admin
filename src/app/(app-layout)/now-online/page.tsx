@@ -59,7 +59,7 @@ export default function ALNowOnlineRootPage(props: IALNowOnlineRootPageProps) {
             title: 'Active',
             typeFilter: {
                 type: 'select',
-                data: ['Active', 'Un Active'],
+                data: ['Active', 'Inactive'],
             },
             renderRow(row) {
                 return <ActiveColumn active={row.is_active} />;

@@ -75,7 +75,7 @@ const refreshAuthLogic = async (failedRequest: any) => {
     } catch (error) {
         const response = Api.response_form_error(error as ApiError, { error: false, success: false });
 
-        if (response?.status === 401) {
+        if (response?.status_code === 401) {
             logout();
         }
 

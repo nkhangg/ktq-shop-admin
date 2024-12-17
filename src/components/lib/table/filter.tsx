@@ -192,6 +192,7 @@ export default function Filter<R extends Record<string, string | number>>({
                                                 size={defaultStyleInput.size}
                                                 style={defaultStyleInput.style}
                                                 styles={defaultStyleInput.styles}
+                                                checkIconPosition="right"
                                                 {...props.select}
                                             />
                                         );

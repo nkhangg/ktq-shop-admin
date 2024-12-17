@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { Api, IApiResponse, IApiResponsePagination } from './api';
 import { IAddress, IBlacklist, ICustomer } from '@/types';
-import { base64ToFile, cleanObject } from '@/utils/app';
+import { base64ToFile, cleanObject, clearData } from '@/utils/app';
 import { nanoid } from '@reduxjs/toolkit';
 
 export type ICustomerView = {
@@ -50,8 +50,10 @@ export default class ApiCustomers extends Api {
         return await this.get<IApiResponse<ICustomer>>(String(id));
     }
 
-    public async update({ id, username, email, created_at, updated_at, customerGroup, ...data }: UpdateCustomerData): Promise<IApiResponse<ICustomer>> {
-        return await this.put<IApiResponse<ICustomer>>(String(id), { ...data });
+    public async update(data: UpdateCustomerData): Promise<IApiResponse<ICustomer>> {
+        const { id, ...prevData } = clearData(data, ['username', 'email', 'created_at', 'updated_at', 'customerGroup']);
+
+        return await this.put<IApiResponse<ICustomer>>(String(id), prevData);
     }
 
     public async updates(items: ICustomer[], data: Partial<ICustomer>): Promise<IApiResponse<ICustomer>> {
@@ -88,32 +90,32 @@ export default class ApiCustomers extends Api {
         });
     }
 
-    public async hidden(id: ICustomer['id']): Promise<IApiResponse<boolean>> {
-        return await this.put<IApiResponse<boolean>>(`hidden/${id}`, {});
+    public async inActive(id: ICustomer['id']): Promise<IApiResponse<boolean>> {
+        return await this.put<IApiResponse<boolean>>(`${id}/in-active`, {});
     }
 
-    public async unhidden(id: ICustomer['id']): Promise<IApiResponse<boolean>> {
-        return await this.put<IApiResponse<boolean>>(`unhidden/${id}`, {});
+    public async active(id: ICustomer['id']): Promise<IApiResponse<boolean>> {
+        return await this.put<IApiResponse<boolean>>(`${id}/active`, {});
     }
 
-    public async multipleHidden(items: ICustomer[]): Promise<IApiResponse<boolean>> {
+    public async inActives(items: ICustomer[]): Promise<IApiResponse<boolean>> {
         const ids = items.reduce((prev, cur) => {
             prev.push(cur.id);
             return prev;
         }, [] as ICustomer['id'][]);
 
-        return await this.put<IApiResponse<boolean>>('hidden/multiple', {
+        return await this.put<IApiResponse<boolean>>('in-actives', {
             ids,
         });
     }
 
-    public async multipleUnhidden(items: ICustomer[]): Promise<IApiResponse<boolean>> {
+    public async actives(items: ICustomer[]): Promise<IApiResponse<boolean>> {
         const ids = items.reduce((prev, cur) => {
             prev.push(cur.id);
             return prev;
         }, [] as ICustomer['id'][]);
 
-        return await this.put<IApiResponse<boolean>>('unhidden/multiple', {
+        return await this.put<IApiResponse<boolean>>('actives', {
             ids,
         });
     }

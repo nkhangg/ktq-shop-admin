@@ -13,16 +13,19 @@ import { TInput } from '../lib/generate-form/type';
 import CUpdateAvatar from './children/update-avatar';
 import CUpdateBgCover from './children/update-bg-cover';
 import CustomersBase, { ICustomersBaseProps } from './customers-base';
+import { genderList } from '@/instances/constants';
+import { useCustomerGroupsSelectData } from '@/hooks/customer-groups';
 export interface IAccountInformationProps extends ICustomersBaseProps {}
 
 export default function AccountInformation(props: IAccountInformationProps) {
     const customersApi = container.get(ApiCustomers);
-    const customerGroupApi = container.get(ApiCustomerGroup);
 
     const { data } = useQuery({
         queryFn: () => customersApi.getCustomer(props.id),
         queryKey: ['customers/update/[GET]'],
     });
+
+    const { customerGroupSelect } = useCustomerGroupsSelectData();
 
     const { mutate } = useMutation({
         mutationFn: (data: UpdateCustomerData) => customersApi.update(data),
@@ -42,22 +45,6 @@ export default function AccountInformation(props: IAccountInformationProps) {
         },
     });
 
-    const customerGroupQuery = useQuery({
-        queryFn: () => customerGroupApi.getAll({}),
-        queryKey: ['customer-group/[GET]'],
-    });
-
-    const customerGroupSelect = useMemo(() => {
-        if (!customerGroupQuery.data?.data) return [];
-
-        return customerGroupQuery.data.data.map((item) => {
-            return {
-                label: capitalize(item.name),
-                value: String(item.id),
-            };
-        }) as ComboboxData;
-    }, [customerGroupQuery.data]);
-
     const [initFormData, setInitFormData] = useState<UpdateCustomerData | null>(null);
 
     const inputs: TInput<UpdateCustomerData>[] = [
@@ -76,11 +63,21 @@ export default function AccountInformation(props: IAccountInformationProps) {
             key: 'first_name',
             type: 'text',
             title: 'First name',
+            validate: {
+                options: {
+                    required: false,
+                },
+            },
         },
         {
             key: 'last_name',
             type: 'text',
             title: 'Last name',
+            validate: {
+                options: {
+                    required: false,
+                },
+            },
         },
         {
             key: 'email',
@@ -93,22 +90,31 @@ export default function AccountInformation(props: IAccountInformationProps) {
             title: 'Phone',
             validate: {
                 style: 'phone',
+                options: {
+                    required: false,
+                },
             },
         },
         {
             key: 'gender',
             type: 'select',
-            data: [
-                { label: 'Male', value: 'male' },
-                { label: 'Female', value: 'female' },
-                { label: 'Other', value: 'other' },
-            ],
+            data: genderList,
             title: 'Gender',
+            validate: {
+                options: {
+                    required: false,
+                },
+            },
         },
         {
             key: 'date_of_birth',
             type: 'date',
             title: 'Date of birth',
+            validate: {
+                options: {
+                    required: false,
+                },
+            },
         },
         {
             key: 'vat_number',
@@ -124,6 +130,11 @@ export default function AccountInformation(props: IAccountInformationProps) {
             type: 'select',
             title: 'Group',
             data: customerGroupSelect,
+            validate: {
+                options: {
+                    required: false,
+                },
+            },
         },
     ];
 

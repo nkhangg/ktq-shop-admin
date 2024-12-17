@@ -22,7 +22,7 @@ import {
 
 import { DateInput, DateInputProps, DateTimePicker, DateTimePickerProps } from '@mantine/dates';
 
-import { Fragment, useCallback, useEffect, useMemo } from 'react';
+import { Fragment, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
 
 import { useForm } from '@mantine/form';
 import { upperFirst } from '@mantine/hooks';
@@ -37,6 +37,7 @@ export default function GenerateForm<R extends Record<string, any>>({
     initData,
     layout = { xl: { col: 2, gap: 20 } },
     submitButton = { title: 'Submit' },
+    formRef,
     onSubmit,
     onValuesChange,
 }: IGenerateFormProps<R>) {
@@ -135,7 +136,7 @@ export default function GenerateForm<R extends Record<string, any>>({
                 }
                 case 'select': {
                     if (!input?.data) throw new Error('The data prop is required');
-                    return <Select data={input.data} {...props} {...(input.props as SelectProps)} />;
+                    return <Select data={input.data} {...props} checkIconPosition="right" {...(input.props as SelectProps)} />;
                 }
                 case 'text-area': {
                     return <Textarea {...props} {...(props as TextareaProps)} />;
@@ -209,6 +210,16 @@ export default function GenerateForm<R extends Record<string, any>>({
 
         form.setValues(newInitData);
     }, [generateInitData]);
+
+    useImperativeHandle(
+        formRef,
+        () => {
+            return {
+                reset: form.reset,
+            };
+        },
+        [form.reset],
+    );
 
     return (
         <>

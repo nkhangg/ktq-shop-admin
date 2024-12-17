@@ -70,6 +70,10 @@ export interface ILayoutFormItem {
     gap?: number;
 }
 
+export type TRefForm = React.MutableRefObject<{
+    reset?: () => void;
+}>;
+
 export interface IGenerateFormProps<R extends Record<string, string | number>> {
     inputs: TInput<R>[];
     initData?: R;
@@ -83,4 +87,5 @@ export interface IGenerateFormProps<R extends Record<string, string | number>> {
     onValuesChange?: (values: R, previous: R) => void;
     submitButton?: { title?: string; props?: ButtonProps & { type?: 'button' | 'submit' | 'reset' } } | (() => ReactNode);
     props?: DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
+    formRef?: TRefForm;
 }

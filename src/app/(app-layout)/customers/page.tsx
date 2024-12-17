@@ -21,6 +21,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import capitalize from 'capitalize';
+import { genderList } from '@/instances/constants';
+import { useCustomerGroupsSelectData } from '@/hooks/customer-groups';
 
 export interface IALCustomersRootPageProps {}
 
@@ -46,6 +48,8 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
         queryKey: ['customers[GET]', { ...params }],
         queryFn: () => customersApi.getCustomers(params),
     });
+
+    const { customerGroupSelect } = useCustomerGroupsSelectData();
 
     const delsMuta = useMutation({
         mutationKey: ['bulk-deletes-customers/', chooses],
@@ -73,9 +77,9 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
         },
     });
 
-    const hiddenMultipleMuta = useMutation({
-        mutationKey: ['bulk-hidden-customers/', chooses],
-        mutationFn: () => customersApi.multipleHidden(chooses),
+    const inActivesMutation = useMutation({
+        mutationKey: ['customers/in-actives[PUT]', chooses],
+        mutationFn: () => customersApi.inActives(chooses),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
         },
@@ -86,9 +90,9 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
         },
     });
 
-    const unhiddenMultipleMuta = useMutation({
+    const activesMultipleMutation = useMutation({
         mutationKey: ['bulk-unhidden-customers/', chooses],
-        mutationFn: () => customersApi.multipleUnhidden(chooses),
+        mutationFn: () => customersApi.actives(chooses),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
         },
@@ -110,22 +114,6 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
             refetch();
         },
     });
-
-    const customerGroupQuery = useQuery({
-        queryFn: () => customerGroupApi.getAll({}),
-        queryKey: ['customer-group/[GET]'],
-    });
-
-    const customerGroupSelect = useMemo(() => {
-        if (!customerGroupQuery.data?.data) return [];
-
-        return customerGroupQuery.data.data.map((item) => {
-            return {
-                label: capitalize(item.name),
-                value: String(item.id),
-            };
-        }) as ComboboxData;
-    }, [customerGroupQuery.data]);
 
     const updatesMuta = useMutation({
         mutationKey: ['customers/multiple/updates[PUT]', chooses],
@@ -170,7 +158,7 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
             title: 'Active',
             typeFilter: {
                 type: 'select',
-                data: ['Active', 'Un Active'],
+                data: ['Active', 'Inactive'],
             },
             renderRow(row) {
                 return <ActiveColumn active={row.is_active} />;
@@ -298,11 +286,7 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
         {
             key: 'gender',
             type: 'select',
-            data: [
-                { label: 'Male', value: 'male' },
-                { label: 'Female', value: 'female' },
-                { label: 'Other', value: 'other' },
-            ],
+            data: genderList,
             title: 'Gender',
             validate: {
                 options: {
@@ -350,7 +334,7 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
         return [
             {
                 title: 'Active',
-                callback: hiddenMultipleMuta.mutate,
+                callback: activesMultipleMutation.mutate,
                 key: 'active',
                 comfirmAction: true,
                 disabled: chooses.length <= 0,
@@ -361,14 +345,14 @@ export default function ALCustomersRootPage(props: IALCustomersRootPageProps) {
                 },
             },
             {
-                title: 'Un active',
-                callback: unhiddenMultipleMuta.mutate,
-                key: 'un-active',
+                title: 'Inactive',
+                callback: inActivesMutation.mutate,
+                key: 'inactive',
                 comfirmAction: true,
                 disabled: chooses.length <= 0,
                 comfirmOption: (data) => {
                     return {
-                        title: `Are you want to un active ${choosesRef.current.length}`,
+                        title: `Are you want to Inactive ${choosesRef.current.length}`,
                     };
                 },
             },

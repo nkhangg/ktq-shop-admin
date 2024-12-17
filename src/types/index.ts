@@ -1,3 +1,5 @@
+import { ComponentType } from 'react';
+
 export type ICustomer = {
     id: number;
     username: string;
@@ -84,6 +86,7 @@ export type IAdminUser = {
     first_name: any;
     last_name: any;
     is_active: boolean;
+    gender: string;
     role: IRole;
 } & ITimestamp;
 
@@ -93,3 +96,24 @@ export type IRole = {
     id: number;
     role_name: string;
 };
+
+export type ICustomerPageMenuData = {
+    key: string;
+    title: string;
+    titleContent: string;
+    component: ComponentType<any>;
+};
+
+export type TComfirmPassword = {
+    password: string;
+    use_time: string[];
+};
+
+export type IResource = {
+    id: number;
+    resource_name: string;
+    type_resource: string;
+    resource_code: string;
+    resource_method: string;
+    description: any;
+} & ITimestamp;

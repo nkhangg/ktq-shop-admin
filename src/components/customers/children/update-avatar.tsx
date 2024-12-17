@@ -99,6 +99,10 @@ export default function CUpdateAvatar({ customerId }: ICUpdateAvatarProps) {
         );
     };
 
+    useEffect(() => {
+        console.log(data?.customer);
+    }, [data]);
+
     return (
         <>
             <Dropzone multiple={false} onDrop={onDrop} onReject={(files) => console.log('rejected files', files)} maxSize={5 * 1024 ** 2} accept={IMAGE_MIME_TYPE}>

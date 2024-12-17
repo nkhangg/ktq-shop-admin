@@ -8,6 +8,6 @@ export default function useTitle(value: string | null) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(pushTitle(value));
+        dispatch(pushTitle((value || '')?.replaceAll('-', ' ')));
     }, []);
 }
