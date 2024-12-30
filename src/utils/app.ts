@@ -1,4 +1,5 @@
-import { IAddress } from '@/types';
+import { IAddress, IPermission, IResource, IRole } from '@/types';
+import { DefaultMantineColor } from '@mantine/core';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -28,7 +29,7 @@ export function removeFalsyValues(obj: Record<string, any>): Record<string, any>
     return Object.fromEntries(Object.entries(obj).filter(([key, value]) => Boolean(value)));
 }
 
-export function clearData<M extends Record<string, any>>(obj: M, removeKeys: (keyof M)[], mappingsKeys?: Record<string, string | { key: string; type: 'number' | 'string' }>[]) {
+export function clearData<M extends Record<string, any>>(obj: M, removeKeys: (keyof M)[], mappingsKeys?: Record<string, any | { key: string; type: 'number' | 'string' }>[]) {
     const newObj = Object.keys(obj).reduce((prev, cur) => {
         if (!removeKeys.includes(cur as keyof M)) {
             prev[cur as keyof M] = obj[cur as keyof M];
@@ -95,4 +96,43 @@ export function showAddress(address: IAddress): string {
     if (region) fullAddress += `, ${region}`;
 
     return fullAddress.replace(/, $/, '');
+}
+
+export function buildColorWithPermission(permission: IPermission) {
+    switch (permission.permission_code) {
+        case 'read': {
+            return 'green' as DefaultMantineColor;
+        }
+        case 'create': {
+            return 'cyan' as DefaultMantineColor;
+        }
+        case 'update': {
+            return 'yellow' as DefaultMantineColor;
+        }
+        case 'delete': {
+            return 'red' as DefaultMantineColor;
+        }
+    }
+}
+
+export function buildColorWithMethod(permission: IResource) {
+    switch (permission.resource_method) {
+        case 'GET': {
+            return 'green' as DefaultMantineColor;
+        }
+        case 'POST': {
+            return 'cyan' as DefaultMantineColor;
+        }
+        case 'PATCH':
+        case 'PUT': {
+            return 'yellow' as DefaultMantineColor;
+        }
+        case 'DELETE': {
+            return 'red' as DefaultMantineColor;
+        }
+    }
+}
+
+export function toSnakeCase(input: string): string {
+    return input.trim().toLowerCase().replace(/\s+/g, '_');
 }

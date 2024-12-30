@@ -14,9 +14,10 @@ import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { GenerateForm } from '../lib/generate-form';
-import { TInput } from '../lib/generate-form/type';
+import { TInput, TRefForm } from '../lib/generate-form/type';
 import CustomersBase, { ICustomersBaseProps } from './customers-base';
 import { TBlockCustomerData } from '@/api/blacklist';
+import { useRef } from 'react';
 
 export interface ICustomerControlAccountProps extends ICustomersBaseProps {}
 

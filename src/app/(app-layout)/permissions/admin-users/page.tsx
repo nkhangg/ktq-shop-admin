@@ -329,6 +329,16 @@ export default function ALAdminUsersRootPage(props: IALAdminUsersRootPageProps) 
             );
             return;
         }
+
+        setCallback(({ password, use_time }) => {
+            if (!password) return;
+
+            deleteMutation.mutate({
+                admin_user: values,
+                use_time: !!use_time.length,
+                admin_password: password,
+            });
+        });
     };
 
     const handleCreateNewAdmin = (values: Partial<IAdminUser> & { password: string }) => {

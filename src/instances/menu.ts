@@ -7,6 +7,7 @@ import {
     IconLogout,
     IconNotes,
     IconPresentationAnalytics,
+    IconSettings2,
     IconUserCog,
     IconUsers,
 } from '@tabler/icons-react';
@@ -25,7 +26,7 @@ export default class Menu {
                 icon: IconUsers,
                 initiallyOpened: false,
                 links: [
-                    { label: 'All Customers', link: Routes.CUSTOMERS },
+                    { label: 'Customers', link: Routes.CUSTOMERS },
                     { label: 'Now Online', link: Routes.NOW_ONLINE },
                     { label: 'Customer Groups', link: Routes.CUSTOMER_GROUP },
                 ],
@@ -35,9 +36,20 @@ export default class Menu {
                 icon: IconUserCog,
                 initiallyOpened: false,
                 links: [
-                    { label: 'All Admin Users', link: Routes.ADMIN_USERS },
-                    { label: 'Admin User Roles', link: Routes.USER_ROLE },
+                    { label: 'Admin Users', link: Routes.ADMIN_USERS },
+                    { label: 'Admin User Roles', link: Routes.USER_ROLES },
+                    { label: 'Resources', link: Routes.RESOURCES },
                 ],
+            },
+            {
+                label: 'Caches Management',
+                icon: IconCalendarStats,
+                link: Routes.CACHES_MANAGEMENT,
+            },
+            {
+                label: 'Configuration',
+                icon: IconSettings2,
+                link: Routes.CONFIGURATION,
             },
             {
                 label: 'Resources',

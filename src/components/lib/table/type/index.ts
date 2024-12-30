@@ -45,14 +45,14 @@ export interface IColumnStyle {
 export type IColumn<R extends Record<string, any>> = {
     key: Extract<keyof R, string>;
     title: string;
-    renderRow?: (row: R, higtlightData?: IDataFilter) => ReactNode;
+    renderRow?: (row: R, highlightData?: IDataFilter) => ReactNode;
     renderColumn?: (col: Omit<IColumn<R>, 'renderRow' | 'renderColumn'>) => ReactNode;
     style?: IColumnStyle;
     styleDefaultHead?: MantineStyleProp;
     typeFilter?: TTypeFilter;
 };
 
-export type TKeyPagiantion = { [key: string]: 'to' | 'from' | 'total' | 'lastPage' | 'perPage' };
+export type TKeyPagination = { [key: string]: 'to' | 'from' | 'total' | 'lastPage' | 'perPage' };
 
 export interface TableChildProps {
     thead?: TableTheadProps;
@@ -75,7 +75,7 @@ export interface IOptions<R extends Record<string, string | number>> {
     prefixShort?: string;
     pathToData?: string; // 'data.data' default 'data'
     pathToOption?: string;
-    keyOptions?: TKeyPagiantion;
+    keyOptions?: TKeyPagination;
 }
 
 export interface IDataFilter {

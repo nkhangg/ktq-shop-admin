@@ -104,9 +104,33 @@ export type ICustomerPageMenuData = {
     component: ComponentType<any>;
 };
 
+export type ICacheStatus = {
+    total_keys: string;
+    used_memory: string;
+};
+
+export type ICacheStatusDetail = {
+    private_keys?: string;
+    public_keys?: string;
+    system_keys?: string;
+} & ICacheStatus;
+
 export type TComfirmPassword = {
     password: string;
     use_time: string[];
+};
+
+export type IRoleResource = {
+    id: number;
+    role: IRole;
+    resource: IResource;
+};
+
+export type IResourcePermission = {
+    id: number;
+    adminUser: IAdminUser;
+    resource: IResource;
+    permission: IPermission;
 };
 
 export type IResource = {
@@ -115,5 +139,13 @@ export type IResource = {
     type_resource: string;
     resource_code: string;
     resource_method: string;
-    description: any;
+    description: string;
+    roleResources?: IRoleResource[];
+    resourcePermissions?: IResourcePermission[];
+} & ITimestamp;
+
+export type IPermission = {
+    id: number;
+    permission_code: string;
+    description: string;
 } & ITimestamp;

@@ -194,10 +194,26 @@ export default function GenerateForm<R extends Record<string, any>>({
         [form, layout],
     );
 
+    const convertValue = (value: any) => {
+        if (typeof value === 'object') {
+            return value;
+        }
+
+        return String(value);
+    };
+
     const generateInitData = useCallback(() => {
-        if (!initData) return null;
+        if (!initData) {
+            return null;
+        }
+        // return inputs.reduce((prev, cur) => {
+        //     (prev as any)[cur.key as keyof R] = cur?.generateValue ? cur.generateValue({ ...cur, value: initData[cur.key] }) : initData[cur.key] || '';
+
+        //     return prev;
+        // }, {} as R);
+
         return inputs.reduce((prev, cur) => {
-            (prev as any)[cur.key as keyof R] = cur?.generateValue ? cur.generateValue({ ...cur, value: initData[cur.key] }) : initData[cur.key] || '';
+            (prev as any)[cur.key as keyof R] = cur?.generateValue ? cur.generateValue({ ...cur, value: convertValue(initData[cur.key]) }) : convertValue(initData[cur.key]) || '';
 
             return prev;
         }, {} as R);
@@ -206,7 +222,10 @@ export default function GenerateForm<R extends Record<string, any>>({
     useEffect(() => {
         const newInitData = generateInitData();
 
-        if (!newInitData) return;
+        if (!newInitData) {
+            form.reset();
+            return;
+        }
 
         form.setValues(newInitData);
     }, [generateInitData]);

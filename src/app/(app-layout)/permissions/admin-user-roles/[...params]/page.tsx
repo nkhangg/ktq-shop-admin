@@ -1,49 +1,59 @@
 'use client';
-import { ApiRoles } from '@/api';
+export interface IALDetailRoleRootPageProps {
+    params: { params: string[] };
+}
+import { ApiResources, ApiRoles } from '@/api';
 import { Api, ApiError } from '@/api/api';
-import { GenerateForm } from '@/components/lib/generate-form';
-import { TInput } from '@/components/lib/generate-form/type';
 import ActionColumn from '@/components/lib/table/action-column';
 import Table from '@/components/lib/table/table';
 import { IActionData, IColumn, TRefTableActionFn } from '@/components/lib/table/type';
 import { container } from '@/di/container';
+import { useTitle } from '@/hooks';
 import { formatTime } from '@/instances/moment';
 import Routes from '@/instances/routes';
-import { RootState } from '@/store';
-import { IRole } from '@/types';
-import { ActionIcon, Box, Modal, Tooltip } from '@mantine/core';
+import { IResource } from '@/types';
+import { buildColorWithMethod } from '@/utils/app';
+import { Box, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconLink } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-export interface IALAdminUserRolesRootPageProps {}
 
-export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPageProps) {
-    const rolesApi = container.get(ApiRoles);
+export default function ALDetailRoleRootPage({
+    params: {
+        params: [id, name],
+    },
+}: IALDetailRoleRootPageProps) {
+    useTitle('Resource of role ' + name);
+
+    const resourceApi = container.get(ApiResources);
+    const roleApi = container.get(ApiRoles);
+
     const [params, setParams] = useState<Record<string, string | number>>({});
 
-    const [chooses, setChooses] = useState<IRole[]>([]);
+    const [chooses, setChooses] = useState<IResource[]>([]);
 
-    const [dataUpdate, setDataUpdate] = useState<IRole | null>(null);
+    const [dataUpdate, setDataUpdate] = useState<IResource | null>(null);
 
-    const choosesRef = useRef<IRole[]>(chooses);
+    const choosesRef = useRef<IResource[]>(chooses);
+
+    const router = useRouter();
 
     const refAction: TRefTableActionFn = useRef({});
 
     const [opened, { open, close }] = useDisclosure(false);
 
     const { data, isPending, refetch } = useQuery({
-        queryKey: ['roles[GET]', { ...params }],
-        queryFn: () => rolesApi.getAll(params),
+        queryKey: ['roles/resource[GET]', id, { ...params }],
+        queryFn: () => resourceApi.resourceByRole(Number(id), params),
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: IRole['id']) => rolesApi.deleteRole(id),
-        mutationKey: ['role[DELETE]'],
+        mutationFn: (data: IResource[]) => roleApi.deleteResourceForRole(Number(id), data),
+        mutationKey: ['roles/resource[DELETE]'],
         onSuccess(data) {
             Api.handle_response(data);
+            setChooses([]);
             refetch();
         },
         onError: (error) => {
@@ -51,42 +61,36 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
         },
     });
 
-    const createMutation = useMutation({
-        mutationFn: (data: Partial<IRole>) => rolesApi.create(data),
-        mutationKey: ['role[POST]'],
-        onSuccess(data) {
-            Api.handle_response(data);
-            refetch();
-            handleClose();
-        },
-        onError: (error) => {
-            Api.response_form_error(error as ApiError);
-        },
-    });
-
-    const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: IRole['id']; data: Partial<IRole> }) => rolesApi.update(id, data),
-        mutationKey: ['role[PUT]'],
-        onSuccess(data) {
-            Api.handle_response(data);
-            refetch();
-            handleClose();
-        },
-        onError: (error) => {
-            Api.response_form_error(error as ApiError);
-        },
-    });
-
-    const columns: IColumn<IRole>[] = [
+    const columns: IColumn<IResource>[] = [
         {
             key: 'id',
             title: 'ID',
             typeFilter: 'number',
         },
         {
-            key: 'role_name',
+            key: 'resource_code',
+            title: 'Code',
+            typeFilter: 'text',
+        },
+
+        {
+            key: 'resource_name',
             title: 'Name',
             typeFilter: 'text',
+        },
+        {
+            key: 'resource_method',
+            title: 'Method',
+            typeFilter: 'text',
+            renderRow(row, _) {
+                return (
+                    <Box className="flex items-center justify-center">
+                        <Text style={{ color: buildColorWithMethod(row) }} size="xs">
+                            {row.resource_method}
+                        </Text>
+                    </Box>
+                );
+            },
         },
         {
             key: 'created_at',
@@ -102,22 +106,6 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
             typeFilter: 'datetime',
             renderRow(row, _) {
                 return <span>{formatTime(row.updated_at)}</span>;
-            },
-        },
-    ];
-
-    const inputs: TInput<IRole>[] = [
-        {
-            key: 'role_name',
-            title: 'Name',
-            type: 'text',
-            validate: {
-                options: {
-                    min: 4,
-                },
-            },
-            props: {
-                withAsterisk: true,
             },
         },
     ];
@@ -147,8 +135,25 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
             //     },
             // },
             {
+                title: 'Delete',
+                callback: () => {
+                    deleteMutation.mutate(chooses);
+                },
+                key: 'delete',
+                comfirmAction: true,
+                disabled: chooses.length <= 0,
+                comfirmOption: (data) => {
+                    return {
+                        title: `Are you want to delete ${choosesRef.current.length}`,
+                    };
+                },
+            },
+
+            {
                 title: 'Add',
-                callback: open,
+                callback: () => {
+                    router.replace(Routes.ROLE_RESOURCE({ id: Number(id), role_name: name }));
+                },
                 key: 'add',
             },
         ] as IActionData[];
@@ -199,29 +204,16 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
                     body(row) {
                         return (
                             <ActionColumn
-                                itemActions={[
-                                    <Tooltip label={`Resources of ${row.role_name}`}>
-                                        <ActionIcon component={Link} href={Routes.DETAIL_ROLE(row)} size="sm">
-                                            <IconLink style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                                        </ActionIcon>
-                                    </Tooltip>,
-                                ]}
                                 messages={(_, data) => {
                                     return {
-                                        delete: `Are you sure delete customer ${data.role_name}`,
+                                        delete: `Are you sure delete customer ${data.resource_name}`,
                                     };
                                 }}
-                                editOption={{
-                                    callback: () => {
-                                        setDataUpdate(row);
-
-                                        open();
-                                    },
-                                }}
+                                showEdit={false}
                                 data={row}
                                 onSubmit={(action) => {
                                     if (action.key === 'delete') {
-                                        deleteMutation.mutate(row.id);
+                                        deleteMutation.mutate([row]);
                                     }
                                 }}
                             />
@@ -232,28 +224,5 @@ export default function ALAdminUserRolesRootPage(props: IALAdminUserRolesRootPag
         );
     }, [data, isPending, actions, refAction]);
 
-    return (
-        <Box>
-            {table}
-
-            <Modal opened={opened} onClose={handleClose} title={`${dataUpdate ? 'Edit' : 'Create'} role`} centered>
-                <GenerateForm
-                    initData={dataUpdate || undefined}
-                    layout={{
-                        lg: {
-                            col: 1,
-                        },
-                    }}
-                    inputs={inputs}
-                    onSubmit={(values) => {
-                        if (!dataUpdate) {
-                            createMutation.mutate(values);
-                        } else {
-                            updateMutation.mutate({ data: { role_name: values.role_name }, id: dataUpdate.id });
-                        }
-                    }}
-                />
-            </Modal>
-        </Box>
-    );
+    return <Box>{table}</Box>;
 }

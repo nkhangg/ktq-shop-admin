@@ -1,19 +1,19 @@
 'use client';
 import { ApiSessions } from '@/api';
+import { Api, ApiError } from '@/api/api';
 import { container } from '@/di/container';
 import moment, { formatTime } from '@/instances/moment';
+import { addComfirm } from '@/store/slices/comfirm-slice';
 import { ICustomer, ISession } from '@/types';
+import { cn } from '@/utils/app';
+import { ActionIcon, Box, Tooltip } from '@mantine/core';
+import { IconLogout2 } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Table from '../lib/table/table';
 import { IActionData, IColumn } from '../lib/table/type';
 import CustomersBase, { ICustomersBaseProps } from './customers-base';
-import { ActionIcon, Box, Button, Dialog, Text, Tooltip } from '@mantine/core';
-import { IconLogout2 } from '@tabler/icons-react';
-import { cn } from '@/utils/app';
-import ActionColumn from '../lib/table/action-column';
-import { useDisclosure } from '@mantine/hooks';
-import { Api, ApiError } from '@/api/api';
 
 export interface ICustomerLoginHistoriesProps extends ICustomersBaseProps {}
 
@@ -26,13 +26,13 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
 
     const choosesRef = useRef<ISession[]>(chooses);
 
-    const [opened, { toggle, close }] = useDisclosure(false);
+    const dispatch = useDispatch();
 
     const [action, setAction] = useState<ISession | null>(null);
 
     const { data, isPending, refetch } = useQuery({
         queryFn: () => sessionApi.getSessionsByCustomer(props.id, params),
-        queryKey: ['customers/sessions[GET]', { ...params }],
+        queryKey: ['customers/sessions[GET]', { ...params }, props.id],
     });
 
     const logoutMutation = useMutation({
@@ -40,12 +40,10 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
         mutationFn: (data: { id_session: ISession['id']; id_customer: ICustomer['id'] }) => sessionApi.logoutCustomer(data),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
-            handleCloseDialog();
         },
         onSuccess: (data) => {
             Api.handle_response(data);
             refetch();
-            handleCloseDialog();
         },
     });
 
@@ -54,7 +52,6 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
         mutationFn: (data: { sessions: ISession[]; id_customer: ICustomer['id'] }) => sessionApi.logoutsCustomer(data),
         onError: (error) => {
             Api.response_form_error(error as ApiError);
-            handleCloseDialog();
         },
         onSuccess: (data) => {
             Api.handle_response(data);
@@ -63,11 +60,11 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
         },
     });
 
-    const handleLogout = () => {
-        if (!action) return;
+    const handleLogout = (data: ISession) => {
+        if (!data) return;
 
         const payload = {
-            id_session: action.id,
+            id_session: data.id,
             id_customer: props.id,
         };
 
@@ -160,12 +157,6 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
         choosesRef.current = chooses;
     }, [chooses]);
 
-    const handleCloseDialog = () => {
-        close();
-
-        setAction(null);
-    };
-
     const table = useMemo(() => {
         return (
             <Table
@@ -213,11 +204,20 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
                                 <Tooltip hidden={!row.live} label="Logout this session">
                                     <ActionIcon
                                         onClick={() => {
-                                            setAction(row);
-                                            toggle();
+                                            dispatch(
+                                                addComfirm({
+                                                    title: `Logout session ID: ${row?.id}`,
+                                                    callback: () => handleLogout(row),
+                                                    acceptLabel: 'Logout',
+                                                    buttonProps: {
+                                                        color: 'red',
+                                                    },
+                                                }),
+                                            );
                                         }}
                                         disabled={!row.live}
                                         color="red"
+                                        size={'sm'}
                                     >
                                         <IconLogout2 style={{ width: '70%', height: '70%' }} stroke={1.5} />
                                     </ActionIcon>
@@ -233,20 +233,6 @@ export default function CustomerLoginHistories(props: ICustomerLoginHistoriesPro
     return (
         <CustomersBase {...props}>
             <Box pb={'xl'}>{table}</Box>
-
-            <Dialog opened={opened} withCloseButton onClose={handleCloseDialog} size="lg" radius="md">
-                <Text size="sm" mb="xs" fw={500}>
-                    {`Logout session ID: ${action?.id}`}
-                </Text>
-                <div className="flex items-center justify-end w-full gap-3">
-                    <Button size="xs" disabled={false} onClick={handleLogout}>
-                        Ok
-                    </Button>
-                    <Button size="xs" disabled={false} color="red" onClick={handleCloseDialog}>
-                        Close
-                    </Button>
-                </div>
-            </Dialog>
         </CustomersBase>
     );
 }

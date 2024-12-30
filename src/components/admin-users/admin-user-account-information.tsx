@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { GenerateForm } from '../lib/generate-form';
 import { TInput } from '../lib/generate-form/type';
 import AdminUserBase, { IAdminUserBaseProps } from './admin-user-base';
+import { useAdminUserById } from '@/hooks/admin-users';
 
 export interface IAdminUserAccountInformationProps extends IAdminUserBaseProps {}
 
@@ -22,10 +23,7 @@ export default function AdminUserAccountInformation(props: IAdminUserAccountInfo
 
     const dispatch = useDispatch();
 
-    const { data, refetch } = useQuery({
-        queryKey: ['admin-users/[id]/[GET]', props.id],
-        queryFn: () => adminUsersApi.getById(props.id),
-    });
+    const { data, refetch } = useAdminUserById(props.id);
 
     const updateMutation = useMutation({
         mutationKey: ['admin-users/[id]/[PUT]', props.id],

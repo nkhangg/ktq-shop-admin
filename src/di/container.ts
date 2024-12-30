@@ -1,7 +1,20 @@
 // container.ts
 'use client';
-import { ApiAuthentication, ApiBlackList, ApiCustomerGroup, ApiCustomers, ApiLocations, ApiRoles, ApiSessions, ApiAdminUsers, ApiResources } from '@/api';
+import {
+    ApiAuthentication,
+    ApiBlackList,
+    ApiCustomerGroup,
+    ApiCustomers,
+    ApiLocations,
+    ApiRoles,
+    ApiSessions,
+    ApiAdminUsers,
+    ApiResources,
+    ApiPermissions,
+    ApiCacheService,
+} from '@/api';
 import ApiAddress from '@/api/addresses';
+import ApiResourcePermissions from '@/api/resource-permissions';
 import { ExpiredUseTimePasswordSSE } from '@/api/sse';
 import { Container } from 'inversify';
 
@@ -17,7 +30,8 @@ container.bind(ApiAdminUsers).toSelf();
 container.bind(ApiAddress).toSelf();
 container.bind(ApiRoles).toSelf();
 container.bind(ApiResources).toSelf();
-
-// sse
+container.bind(ApiPermissions).toSelf();
+container.bind(ApiResourcePermissions).toSelf();
+container.bind(ApiCacheService).toSelf();
 
 export { container };

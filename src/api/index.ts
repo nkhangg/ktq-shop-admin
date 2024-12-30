@@ -8,3 +8,5 @@ export { default as ApiBlackList } from './blacklist';
 export { default as ApiSessions } from './sessions';
 export { default as ApiRoles } from './roles';
 export { default as ApiResources } from './resources';
+export { default as ApiPermissions } from './permissions';
+export { default as ApiCacheService } from './cache-service';

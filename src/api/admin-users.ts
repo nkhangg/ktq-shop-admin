@@ -1,4 +1,4 @@
-import { IAdminUser } from '@/types';
+import { IAdminUser, IRole } from '@/types';
 import { clearData } from '@/utils/app';
 import { injectable } from 'inversify';
 import { Api, IApiResponse, IApiResponsePagination } from './api';
@@ -90,5 +90,11 @@ export default class ApiAdminUsers extends Api {
         const newData = clearData(data, ['admin_user']);
 
         return await this.delete<IApiResponse<boolean>>(`${data.admin_user.id}`, { data: { ...newData } });
+    }
+
+    public async updateRole(id: IAdminUser['id'], data: IComfirmPasswordAdmin & { role_id: IRole['id'] }): Promise<IApiResponse<IAdminUser>> {
+        const newData = clearData(data, []);
+
+        return await this.put<IApiResponse<IAdminUser>>(`role/${id}`, { ...newData, role_id: Number(newData.role_id) });
     }
 }

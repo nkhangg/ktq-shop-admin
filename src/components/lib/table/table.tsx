@@ -5,12 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Checkbox, MantineStyleProp, Table as MTable, TableProps as MTableProps, Tooltip } from '@mantine/core';
 import { AxiosError, AxiosResponse } from 'axios';
 import DOMPurify from 'dompurify';
-import React, { ChangeEvent, CSSProperties, ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import { IChooseOptions, IColumn, IColumnStyle, IDataFilter, IFilterItemProps, IOptions, ITableFilter, ITableShort, TableChildProps, TKeyPagiantion, TRefTableFn } from './type';
-import { defaultPathToData, defaultPrefixShort, defaultStyleHightlight, flowShort, getParamsData as getParamsFromURL, searchKey } from './ultils';
-import Filter from './filter';
+import React, { ChangeEvent, CSSProperties, ReactNode, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import TableActions, { ITableActionsProps } from './action';
-import { useDebouncedValue } from '@mantine/hooks';
+import Filter from './filter';
+import { v4 as uuid } from 'uuid';
+import { IChooseOptions, IColumn, IColumnStyle, IDataFilter, IFilterItemProps, IOptions, ITableFilter, ITableShort, TableChildProps, TKeyPagination, TRefTableFn } from './type';
+import { defaultPathToData, defaultPrefixShort, defaultStyleHightlight, flowShort, getParamsData as getParamsFromURL, searchKey } from './ultils';
 
 export interface TableProps<R extends Record<string, string | number>> extends MTableProps {
     columns: IColumn<R>[];
@@ -179,13 +179,13 @@ const Table = <R extends Record<string, any>>({
         }, obj);
     }
 
-    const getOptionsFromReponse = useCallback(
+    const getOptionsFromResponse = useCallback(
         (response: AxiosResponse<R[]>) => {
             if (!options) return;
 
             const values = getValueFromPath(response, options.pathToOption || defaultPathToData);
 
-            const optionsKeys: TKeyPagiantion = options.keyOptions || {
+            const optionsKeys: TKeyPagination = options.keyOptions || {
                 to: 'to',
                 from: 'from',
                 total: 'total',
@@ -233,7 +233,7 @@ const Table = <R extends Record<string, any>>({
 
                 const data = getValueFromPath(response, options?.pathToData || defaultPathToData);
 
-                const optionPased = getOptionsFromReponse(response);
+                const optionPased = getOptionsFromResponse(response);
 
                 if (options) {
                     setOptionPagiantion({ ...options, ...optionPased });
@@ -260,7 +260,7 @@ const Table = <R extends Record<string, any>>({
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [options?.query, filter, getOptionsFromReponse],
+        [options?.query, filter, getOptionsFromResponse],
     );
 
     const fetchWithShort = useCallback(
@@ -575,9 +575,9 @@ const Table = <R extends Record<string, any>>({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options]);
 
-    useEffect(() => {
-        console.log('filter', filter);
-    }, [filter]);
+    // useEffect(() => {
+    //     console.log('filter', filter);
+    // }, [filter]);
 
     useEffect(() => {
         if (chooses.length < rowsData.length) {
@@ -660,7 +660,7 @@ const Table = <R extends Record<string, any>>({
                         )}
 
                         {columns.map((column) => (
-                            <MTable.Th {...th} style={{ ...(column.style ? (renderStyleHead(column.style) as MantineStyleProp) : th?.style) }} key={column.key}>
+                            <MTable.Th {...th} style={{ ...(column.style ? (renderStyleHead(column.style) as MantineStyleProp) : th?.style) }} key={`${column.key}-${uuid()}`}>
                                 <Box
                                     style={{
                                         display: 'flex',
@@ -709,7 +709,7 @@ const Table = <R extends Record<string, any>>({
                                 )}
 
                                 {columns.map((col) => (
-                                    <MTable.Td key={col.key} {...td}>
+                                    <MTable.Td key={`${col.key}-${uuid()}`} {...td}>
                                         {/* {col.renderRow ? col.renderRow(row) : row[col.key]} */}
 
                                         {renderRow(row, col)}

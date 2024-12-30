@@ -18,6 +18,7 @@ export interface IActionColumnProps<R> {
     itemActions?: JSX.Element[];
     disabledDel?: boolean;
     confirm?: boolean;
+    showEdit?: boolean;
     labelDel?: (data: R) => string;
     labelEdit?: (data: R) => string;
     onSubmit?: (action: IActionColData<R>) => void;
@@ -38,6 +39,7 @@ export default function ActionColumn<R>({
     confirm = true,
     data,
     itemActions,
+    showEdit = true,
     loading,
     editOption = {
         type: 'button',
@@ -68,37 +70,43 @@ export default function ActionColumn<R>({
 
     const items = useMemo(() => {
         return [
-            <Tooltip opened={!!labelEdit} label={labelEdit ? labelEdit(data) : null}>
-                <ActionIcon
-                    component={editOption.type === 'link' ? Link : undefined}
-                    href={editOption.type === 'link' && editOption.url ? editOption.url : ''}
-                    onClick={() => {
-                        if (editOption.type === 'link') return;
+            ...[
+                showEdit ? (
+                    <Tooltip opened={!!labelEdit} label={labelEdit ? labelEdit(data) : null}>
+                        <ActionIcon
+                            component={editOption.type === 'link' ? Link : undefined}
+                            href={editOption.type === 'link' && editOption.url ? editOption.url : ''}
+                            onClick={() => {
+                                if (editOption.type === 'link') return;
 
-                        if (editOption?.callback) {
-                            editOption.callback();
-                        } else {
-                            if (confirm) {
-                                dispatch(
-                                    addComfirm({
-                                        callback: () => handleSubmit({ key: 'edit', data }),
-                                        title:
-                                            (messages && action && (typeof messages === 'function' ? messages(action, data)[action.key] : messages[action.key])) ??
-                                            'Are you want to update?',
-                                        onClose: handleClose,
-                                        acceptLabel: 'Submit',
-                                    }),
-                                );
-                            } else {
-                                handleSubmit({ key: 'edit', data });
-                            }
-                        }
-                    }}
-                    size="sm"
-                >
-                    <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
-                </ActionIcon>
-            </Tooltip>,
+                                if (editOption?.callback) {
+                                    editOption.callback();
+                                } else {
+                                    if (confirm) {
+                                        dispatch(
+                                            addComfirm({
+                                                callback: () => handleSubmit({ key: 'edit', data }),
+                                                title:
+                                                    (messages && action && (typeof messages === 'function' ? messages(action, data)[action.key] : messages[action.key])) ??
+                                                    'Are you want to update?',
+                                                onClose: handleClose,
+                                                acceptLabel: 'Submit',
+                                            }),
+                                        );
+                                    } else {
+                                        handleSubmit({ key: 'edit', data });
+                                    }
+                                }
+                            }}
+                            size="sm"
+                        >
+                            <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} color="white" />
+                        </ActionIcon>
+                    </Tooltip>
+                ) : (
+                    []
+                ),
+            ],
             ...(itemActions || []),
             <Tooltip opened={!!labelDel} label={labelDel ? labelDel(data) : undefined}>
                 <ActionIcon

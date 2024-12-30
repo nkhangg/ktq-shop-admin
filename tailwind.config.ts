@@ -7,6 +7,8 @@ const config: Config = {
             colors: {
                 background: 'var(--background)',
                 foreground: 'var(--foreground)',
+
+                'gray-mantine': 'var(--mantine-color-dark-6)',
             },
             animation: {
                 wiggle: 'wiggle 0.2s infinite',

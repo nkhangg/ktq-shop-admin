@@ -1,6 +1,8 @@
 'use client';
 import AdminUserAccountInformation from '@/components/admin-users/admin-user-account-information';
 import AdminUserPassword from '@/components/admin-users/admin-user-password';
+import AdminUserRole from '@/components/admin-users/admin-user-role';
+import AdminUserControlAccount from '@/components/admin-users/admin-user-contol-account';
 import CustomerView from '@/components/customers/customer-view';
 import { useTitle } from '@/hooks';
 import { useAdminUserStore } from '@/store/zustand';
@@ -39,13 +41,13 @@ export default function ALDetailAdminUserRootPage({
                 key: 'role',
                 title: 'Role',
                 titleContent: 'Role',
-                component: CustomerView,
+                component: AdminUserRole,
             },
             {
                 key: 'control',
                 title: 'Control',
                 titleContent: 'Control',
-                component: CustomerView,
+                component: AdminUserControlAccount,
             },
         ];
     }, []);
