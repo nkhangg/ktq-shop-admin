@@ -5,6 +5,7 @@ import {
     Checkbox,
     CheckboxProps,
     Group,
+    JsonInput,
     NumberInput,
     NumberInputProps,
     PasswordInput,
@@ -72,12 +73,14 @@ export default function GenerateForm<R extends Record<string, any>>({
 
     const renderInput = useCallback(
         (input: TInput<R>) => {
-            const renderColsapn = (colspan?: number) => {
+            const renderColspan = (colspan?: number) => {
+                if (colspan) {
+                    return `span ${colspan} / span ${colspan}`;
+                }
+
                 if (!layout || !layout?.xl?.col || !colspan) return `span 1 / span 1`;
 
                 if (colspan > layout.xl.col) return `span ${layout} / span ${layout}`;
-
-                return `span ${colspan} / span ${colspan}`;
             };
 
             const props = {
@@ -88,7 +91,7 @@ export default function GenerateForm<R extends Record<string, any>>({
 
                 label: input?.title || <span className="capitalize">{input.key}</span>,
                 style: {
-                    gridColumn: renderColsapn(input.colspan),
+                    gridColumn: renderColspan(input.colspan),
                 },
 
                 ...form.getInputProps(input.key),
@@ -139,7 +142,10 @@ export default function GenerateForm<R extends Record<string, any>>({
                     return <Select data={input.data} {...props} checkIconPosition="right" {...(input.props as SelectProps)} />;
                 }
                 case 'text-area': {
-                    return <Textarea {...props} {...(props as TextareaProps)} />;
+                    return <Textarea {...props} {...(input.props as TextareaProps)} />;
+                }
+                case 'json': {
+                    return <JsonInput {...props} {...(input.props as TextareaProps)} />;
                 }
                 case 'password': {
                     return <PasswordInput {...props} {...(input.props as PasswordInputProps)} />;
@@ -235,9 +241,10 @@ export default function GenerateForm<R extends Record<string, any>>({
         () => {
             return {
                 reset: form.reset,
+                form,
             };
         },
-        [form.reset],
+        [form],
     );
 
     return (

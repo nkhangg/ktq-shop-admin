@@ -18,6 +18,8 @@ export default class Routes {
     public static NOW_ONLINE = '/now-online';
     public static CACHES_MANAGEMENT = '/caches-management';
     public static CONFIGURATION = '/configuration';
+    public static PRODUCTS = '/catalog/products';
+    public static CATEGORIES = '/catalog/categories';
 
     public static DETAIL_CUSTOMER = (customer: ICustomer) => {
         return `${this.CUSTOMERS}/${customer.id}/${customer.username}`;

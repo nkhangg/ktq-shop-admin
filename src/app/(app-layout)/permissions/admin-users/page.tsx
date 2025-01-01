@@ -35,7 +35,7 @@ export default function ALAdminUsersRootPage(props: IALAdminUsersRootPageProps) 
 
     const { setCallback, useTimePassword } = useAdminUserStore();
 
-    const formRef: TRefForm = useRef({});
+    const formRef: TRefForm<Partial<IAdminUser> & { password: string }> = useRef({});
 
     const choosesRef = useRef<IUser[]>(chooses);
 

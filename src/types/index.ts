@@ -149,3 +149,11 @@ export type IPermission = {
     permission_code: string;
     description: string;
 } & ITimestamp;
+
+export type IConfig = {
+    id: number;
+    key_name: string;
+    key_type: 'string' | 'number' | 'json' | 'none';
+    key_space: 'private' | 'public';
+    key_value: string;
+};

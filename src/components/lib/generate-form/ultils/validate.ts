@@ -46,10 +46,10 @@ export default {
     number: <R extends Record<string, string | number>>(input: TInput<R>, value?: string) => {
         const { required = true, min, max, messages = {} } = input?.validate?.options || {};
         const defaultMessages = {
-            required: 'Number is required',
-            invalid: 'Invalid number format',
-            min: `Number is too small (minimum ${min})`,
-            max: `Number is too large (maximum ${max})`,
+            required: `${input.title || input.key} is required`,
+            invalid: `Invalid number format`,
+            min: `${input.title || input.key} is too small (minimum ${min})`,
+            max: `${input.title || input.key} is too large (maximum ${max})`,
             ...messages,
         };
 
@@ -84,7 +84,27 @@ export default {
         if (max && length > (max as number)) return defaultMessages.max;
         return /^\+?\d{10,15}$/.test(value ?? '') ? null : defaultMessages.invalid;
     },
+    json: <R extends Record<string, string | number>>(input: TInput<R>, value?: string) => {
+        const { required = true, messages = {} } = input?.validate?.options || {};
+        const defaultMessages = {
+            required: `${input.title || input.key} is required`,
+            invalid: 'Invalid JSON format',
+            ...messages,
+        };
 
+        if (!required && (value === undefined || value === '')) return null;
+
+        if (required && (value === undefined || (typeof value === 'string' && value.trim() === ''))) {
+            return defaultMessages.required;
+        }
+
+        try {
+            JSON.parse(value ?? '');
+            return null;
+        } catch (e) {
+            return defaultMessages.invalid;
+        }
+    },
     url: <R extends Record<string, string | number>>(input: TInput<R>, value?: string) => {
         const { required = true, messages = {} } = input?.validate?.options || {};
         const defaultMessages = {

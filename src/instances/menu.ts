@@ -1,5 +1,6 @@
 import {
     IconAdjustments,
+    IconBox,
     IconCalendarStats,
     IconFileAnalytics,
     IconGauge,
@@ -39,6 +40,15 @@ export default class Menu {
                     { label: 'Admin Users', link: Routes.ADMIN_USERS },
                     { label: 'Admin User Roles', link: Routes.USER_ROLES },
                     { label: 'Resources', link: Routes.RESOURCES },
+                ],
+            },
+            {
+                label: 'Catalog',
+                icon: IconBox,
+                initiallyOpened: false,
+                links: [
+                    { label: 'Products', link: Routes.PRODUCTS },
+                    { label: 'Categories', link: Routes.CATEGORIES },
                 ],
             },
             {

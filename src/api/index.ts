@@ -10,3 +10,4 @@ export { default as ApiRoles } from './roles';
 export { default as ApiResources } from './resources';
 export { default as ApiPermissions } from './permissions';
 export { default as ApiCacheService } from './cache-service';
+export { default as ApiConfigs } from './configs';

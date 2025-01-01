@@ -1,5 +1,6 @@
 import {
     __InputStylesNames,
+    ComboboxData,
     CSSProperties,
     InputVariant,
     MantineComponent,
@@ -23,7 +24,7 @@ import { AxiosResponse } from 'axios';
 import React, { ChangeEventHandler, ReactNode } from 'react';
 export type TShort = 'asc' | 'desc' | 'clear';
 
-export type TTypeFilter = 'text' | 'number' | 'date' | 'datetime' | { type: 'select'; data: string[] };
+export type TTypeFilter = 'text' | 'number' | 'date' | 'datetime' | { type: 'select'; data: string[] | ComboboxData };
 
 export type TRefTableFn<R extends Record<string, string | number>> = React.MutableRefObject<{
     setFilter?: (filter: ITableFilter<R>[]) => void;

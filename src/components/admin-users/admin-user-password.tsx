@@ -20,7 +20,7 @@ export default function AdminUserPassword(props: IAdminUserPasswordProps) {
 
     const adminUserApi = container.get(ApiAdminUsers);
 
-    const formRef: TRefForm = useRef({});
+    const formRef: TRefForm<IAdminUserPasswordData> = useRef({});
 
     const inputs: TInput<IAdminUserPasswordData>[] = [
         {

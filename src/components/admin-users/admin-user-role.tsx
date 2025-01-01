@@ -24,7 +24,7 @@ export default function AdminUserRole(props: IAdminUserRoleProps) {
 
     const adminUserApi = container.get(ApiAdminUsers);
 
-    const formRef: TRefForm = useRef({});
+    const formRef: TRefForm<{ role_id: IRole['id'] }> = useRef({});
 
     const inputs: TInput<{ role_id: IRole['id'] }>[] = [
         {

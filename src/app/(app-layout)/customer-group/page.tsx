@@ -3,7 +3,6 @@ import { ApiCustomerGroup } from '@/api';
 import { Api, ApiError } from '@/api/api';
 import { GenerateForm } from '@/components/lib/generate-form';
 import { TInput } from '@/components/lib/generate-form/type';
-import ActionColumn from '@/components/lib/table/action-column';
 import Table from '@/components/lib/table/table';
 import { IActionData, IColumn } from '@/components/lib/table/type';
 import { container } from '@/di/container';
@@ -12,7 +11,7 @@ import { useCustomerGroupsSelectData } from '@/hooks/customer-groups';
 import moment from '@/instances/moment';
 import { addComfirm } from '@/store/slices/comfirm-slice';
 import { ICustomerGroup } from '@/types';
-import { ActionIcon, Box, Modal, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -124,6 +123,11 @@ export default function ALCustomerGroupRootPage(props: IALCustomerGroupRootPageP
             key: 'name',
             type: 'text',
             title: 'Name',
+            validate: {
+                options: {
+                    min: 4,
+                },
+            },
         },
     ];
 

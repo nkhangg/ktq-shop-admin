@@ -1,9 +1,9 @@
 import { ButtonProps, CheckboxProps, ComboboxData, NumberInputProps, PasswordInputProps, RadioProps, SelectProps, TextareaProps, TextInputProps } from '@mantine/core';
 import { DateInputProps, DateTimePickerProps } from '@mantine/dates';
-import { UseFormInput } from '@mantine/form';
+import { UseFormInput, UseFormReturnType } from '@mantine/form';
 import { DetailedHTMLProps, ReactNode } from 'react';
 
-export type TTypeInput = 'number' | 'text' | 'boolean' | 'select' | 'checkbox' | 'password' | 'text-area' | 'show' | 'date' | 'datetime';
+export type TTypeInput = 'number' | 'text' | 'boolean' | 'select' | 'checkbox' | 'password' | 'text-area' | 'show' | 'date' | 'datetime' | 'json';
 export type TStyleValidate = 'number' | 'text' | 'phone' | 'url' | 'email' | 'date' | 'datetime';
 // Conditional types để xác định kiểu props dựa trên type
 export type GetPropsByType<T extends TTypeInput> = T extends keyof PropsMapping ? PropsMapping[T] : never;
@@ -70,8 +70,9 @@ export interface ILayoutFormItem {
     gap?: number;
 }
 
-export type TRefForm = React.MutableRefObject<{
+export type TRefForm<R extends Record<string, any>> = React.MutableRefObject<{
     reset?: () => void;
+    form?: UseFormReturnType<R, (values: R) => R>;
 }>;
 
 export interface IGenerateFormProps<R extends Record<string, string | number>> {
@@ -87,5 +88,5 @@ export interface IGenerateFormProps<R extends Record<string, string | number>> {
     onValuesChange?: (values: R, previous: R) => void;
     submitButton?: { title?: string; props?: ButtonProps & { type?: 'button' | 'submit' | 'reset' } } | (() => ReactNode);
     props?: DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
-    formRef?: TRefForm;
+    formRef?: TRefForm<R>;
 }
